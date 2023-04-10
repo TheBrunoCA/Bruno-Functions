@@ -12,7 +12,7 @@ Downloads the page's content and returns it. Not Async.
 GetPageContent(p_url)
 {
     page := ComObject("MSXML2.XMLHTTP.6.0")
-    page.Open("GET", url, true)
+    page.Open("GET", p_url, true)
     page.Send()
 
     while(page.readyState != 4)

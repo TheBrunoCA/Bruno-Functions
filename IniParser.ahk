@@ -33,7 +33,6 @@ Class IniParser{
             }
             else{
                 throw e
-                ExitApp(100)
             }
         }
         sections := StrSplit(sections, "`n")
