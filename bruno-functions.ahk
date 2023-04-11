@@ -13,7 +13,6 @@ Create the dir if necessary before returning it back.
 NewDir(p_dir_path){
     if DirExist(p_dir_path) == ""
         DirCreate(p_dir_path)
-
     return p_dir_path
 }
 
@@ -23,8 +22,14 @@ Create the ini if necessary before returning it back.
 @Returns The ini path
 */
 NewIni(p_ini_path){
-    dir := StrSplit(p_ini_path,"\").Pop()
-    dir := NewDir(dir)
+    dir := StrSplit(p_ini_path,"\")
+    dir.Pop()
+    w := ""
+    for i, y in dir{
+        w .= y "\"
+    }
+
+    dir := NewDir(w)
     
     ext := StrSplit(p_ini_path,".")
     ext := ext[ext.Length]
