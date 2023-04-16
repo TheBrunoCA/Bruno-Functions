@@ -23,12 +23,17 @@ class BatWrite {
         FileAppend("@CHCP 1252 >NUL`n", this.path)
     }
 
+    /*
+    Deletes the bat itself. It will work after this. But without the encoding config.
+    */
     DeleteSelf() {
         if FileExist(this.path) != ""
             FileDelete(this.path)
     }
 
-
+    /*
+    Moves a file.
+    */
     MoveFile(p_from, p_to) {
         w := "
         (
@@ -41,6 +46,9 @@ class BatWrite {
         FileAppend(w, this.path)
     }
 
+    /*
+    Deletes a file.
+    */
     DeleteFile(p_file){
         w := "
         (
@@ -53,6 +61,9 @@ class BatWrite {
         FileAppend(w, this.path)
     }
 
+    /*
+    Its a batch equivalent of Run.
+    */
     Start(p_path){
         w := "
         (
@@ -65,6 +76,9 @@ class BatWrite {
         FileAppend(w, this.path)
     }
 
+    /*
+    Its a batch equivalent of sleep.
+    */
     TimeOut(p_seconds){
         w := "
         (
@@ -77,6 +91,9 @@ class BatWrite {
         FileAppend(w, this.path)
     }
 
+    /*
+    Deletes the last line of command.
+    */
     DeleteLastLine(){
         file := FileRead(this.path)
         if file == ""
@@ -98,6 +115,9 @@ class BatWrite {
         FileAppend(ret, this.path)
     }
 
+    /*
+     Creates a shortcut of something somewhere.
+    */
     CreateShortcut(p_from, p_to, p_type := "Powershell"){
         if p_type != "Powershell" && p_type != "Mklink"
             throw Error("p_type can only be `"Powershell`" or `"Mklink`"!")
@@ -127,5 +147,32 @@ class BatWrite {
                     FileAppend(w, this.path)
                 }
         }
+    }
+
+    /*
+    Schedules something to run on logon. It works but the bat needs to be run as admin.
+    */
+    ScheduleOnLogon(task_name, task_path, run_level := "Limited"){
+        w := "
+        (
+        schtasks /Create /RL "{3}" /RU "NT AUTHORITY\SYSTEM" /SC ONLOGON /TN "{1}" /TR "{2}"
+
+        )"
+
+        w := Format(w, task_name, task_path, run_level)
+
+        FileAppend(w, this.path)
+    }
+
+    DeleteSchedule(task_name){
+        w := "
+        (
+        schtasks /Delete /TN "{1}"
+
+        )"
+
+        w := Format(w, task_name)
+
+        FileAppend(w, this.path)
     }
 }

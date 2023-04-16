@@ -5,6 +5,10 @@ GetAppName(){
     return StrSplit(A_ScriptName, ".")[1]
 }
 
+GetExtension(){
+    return "." StrSplit(A_ScriptName, ".")[2]
+}
+
 /*
 Create the dir if necessary before returning it back.
 @Param p_dir_path The dir path
@@ -37,7 +41,7 @@ NewIni(p_ini_path){
         p_ini_path .= ".ini"
 
     if FileExist(p_ini_path) == ""{
-        IniWrite(true, p_ini_path, "auto", "auto created")
+        IniWrite(true, p_ini_path, "auto", "auto_created")
     }
     return p_ini_path
 }

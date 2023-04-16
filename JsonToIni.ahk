@@ -10,19 +10,22 @@ Formats a json into a Map.
 @Param p_path_to_save Where to save the ini file.
 @Param p_section_name Main section's name
 @Param p_is_path Set to True if p_json is a path.
-@Return A Map of the json file.
+@Return A Ini of the json file.
 */
 #Requires autohotkey v2.0
 JsonToIni(p_json, p_path_to_save, p_section_name := "DEFAULT", p_is_path := false, p_append := false)
 {
 
-    StrArrayToString(p_str_array, p_delimiter := "`n", p_ignore_blank := true)
+    StrArrayToString(p_str_array, p_delimiter := "`n")
     {
+        if !p_str_array.HasMethod("Pop")
+            throw Error("p_str_array must be a Array", "StrArrayToString")
+
         ret_string := ""
 
         for i, string in p_str_array
         {
-            if string == "" && p_ignore_blank
+            if string == ""
                 continue
             
             ret_string .= string . p_delimiter
@@ -75,21 +78,20 @@ JsonToIni(p_json, p_path_to_save, p_section_name := "DEFAULT", p_is_path := fals
         return StrArrayToString(arr, "")
     }
 
-    ;text := "firstcharactersoftextrandomoi"
     text .= p_json
 
     if(p_is_path)
     {
         if(FileExist(p_json) == "")
         {
-            throw Error("p_json file do not exist.")
+            throw Error("p_json file do not exist.", "JsonToIni")
         }
 
         text := FileRead(p_json)
 
         if(text == "")
         {
-            throw Error("p_json is a empty file.")
+            throw Error("p_json is a empty file.", "JsonToIni")
         }
     }
 
@@ -142,7 +144,7 @@ JsonToIni(p_json, p_path_to_save, p_section_name := "DEFAULT", p_is_path := fals
         {
             if depth.Length < 1
             {
-                throw Error("Error while parsing.")
+                throw Error("Error while parsing.", "JsonToIni")
             }
             depth.pop()
             continue
@@ -180,12 +182,6 @@ JsonToIni(p_json, p_path_to_save, p_section_name := "DEFAULT", p_is_path := fals
         }
     }
     
-    
-    ;if(FileExist("teste.txt") != "")
-    ;{
-    ;    FileDelete("teste.txt")
-    ;}
-    
     if(FileExist(p_path_to_save) != "" && p_append == false)
     {
         FileDelete(p_path_to_save)
@@ -195,7 +191,7 @@ JsonToIni(p_json, p_path_to_save, p_section_name := "DEFAULT", p_is_path := fals
     dir := StrArrayToString(dir, "\")
     if DirExist(dir) == ""
         DirCreate(dir)
-    ;FileAppend(text, "teste.txt")
+    
     FileAppend(result, p_path_to_save)
     
     return result

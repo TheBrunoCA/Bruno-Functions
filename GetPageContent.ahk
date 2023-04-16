@@ -13,12 +13,24 @@ GetPageContent(p_url)
 {
     page := ComObject("MSXML2.XMLHTTP.6.0")
     page.Open("GET", p_url, true)
-    page.Send()
 
-    while(page.readyState != 4)
-    {
-        Sleep(50)
+    loop 10 {
+        try {
+            page.Send()
+            while (page.readyState != 4)
+            {
+                Sleep(50)
+            }
+            break
+        }
+        catch Error as e {
+            if InStr(e.Message, "(0x80070005)") {
+                sleep 50
+                continue
+            }
+            else
+                throw e
+        }
     }
-
     return page.ResponseText
 }
