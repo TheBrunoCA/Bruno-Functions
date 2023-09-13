@@ -31,6 +31,10 @@ class BatWrite {
             FileDelete(this.path)
     }
 
+    AddEncoding() {
+        FileAppend("@CHCP 1252 >NUL`n", this.path)
+    }
+
     /*
     Moves a file.
     */

@@ -5,195 +5,195 @@ Original repository: https://github.com/TheBrunoCA/Bruno-Functions
 */
 
 /*
-Formats a json into a Map.
+Formats a json into a simple array.
 @Param p_json The json file.
-@Param p_path_to_save Where to save the ini file.
-@Param p_section_name Main section's name
 @Param p_is_path Set to True if p_json is a path.
-@Return A Ini of the json file.
+@Return An array of the json file.
 */
-#Requires autohotkey v2.0
-JsonToIni(p_json, p_path_to_save, p_section_name := "DEFAULT", p_is_path := false, p_append := false)
+JsonToMap(p_json, p_is_path := false)
 {
-
-    StrArrayToString(p_str_array, p_delimiter := "`n")
-    {
-        if !p_str_array.HasMethod("Pop")
-            throw Error("p_str_array must be a Array", "StrArrayToString")
-
-        ret_string := ""
-
-        for i, string in p_str_array
-        {
-            if string == ""
-                continue
-            
-            ret_string .= string . p_delimiter
-        }
-    
-        return ret_string
-    }
-
-    RemoveSpacesOutStrings(p_text)
-    {
-        p_text_array := StrSplit(p_text)
-        is_str := false
-        arr := []
-
-        for i, word in p_text_array
-        {
-            if(word != " " || is_str)
-            {
-                if(word == "`"")
-                {
-                    is_str := !is_str
-                }
-                arr.Push(word)
-            }
-        }
-
-        return StrArrayToString(arr, "")
-    }
-
-    StrPutInPlace(p_haystack, p_needle, p_before := "", p_after := "", p_ignore_strings := true, p_substitute := false)
-    {
-        p_text_array := StrSplit(p_haystack)
-        is_str := false
-        arr := []
-
-        for i, word in p_text_array
-        {
-            if(word == p_needle && !is_str)
-            {
-                w := p_substitute ? "" : p_needle
-                arr.Push(p_before . w . p_after)
-                continue
-            }
-            if(word == "`"" && p_ignore_strings)
-            {
-                is_str := !is_str
-            }
-            arr.Push(word)
-        }
-        return StrArrayToString(arr, "")
-    }
-
-    text .= p_json
+    text := ""
 
     if(p_is_path)
     {
         if(FileExist(p_json) == "")
         {
-            throw Error("p_json file do not exist.", "JsonToIni")
+            throw Error("p_json file do not exist.")
         }
 
         text := FileRead(p_json)
 
         if(text == "")
         {
-            throw Error("p_json is a empty file.", "JsonToIni")
+            throw Error("p_json is a empty file.")
         }
     }
+    ;text := StrReplace(text, "{", "")
+    ;text := StrReplace(text, "}", "")
+    ;text := StrReplace(text, "`n", "")
+    ;text := StrReplace(text, "`":", "`",")
+    ;text := StrReplace(text, "`"", "")
+    ;text := StrReplace(text, "[", "")
+    ;text := StrReplace(text, "]", "")
+    text := StrReplace(text, ": ", ":")
+    text := StrReplace(text, "  ", "")
+    text := StrReplace(text, "{", "")
+    text := StrReplace(text, "", "")
+    text := StrReplace(text, "`"", "")
+    text := StrReplace(text, ",", "")
+    text := StrSplit(text, "`n")
+    text.Pop()
 
-    text := StrReplace(text, "`n", "")
-    text := StrReplace(text, "`r", "")
-    text := StrReplace(text, "`t", "")
+    json_map := Map()
 
-    text := RemoveSpacesOutStrings(text)
-    text := StrPutInPlace(text, ",", , "`n")
-    text := StrPutInPlace(text, ":", , ":=", , true)
-    text := StrReplace(text, ":={", ":{")
-    text := StrReplace(text, ":=[", ":[")
-    text := StrPutInPlace(text, "{", , "`n")
-    text := StrPutInPlace(text, "}", "`n", "`n")
-    text := StrPutInPlace(text, "[", , "`n")
-    text := StrPutInPlace(text, "]", "`n")
-    text := StrReplace(text, "},`n", "}`n")
-    text := StrReplace(text, "],`n", "]`n")
-    
-    arr_txt := StrSplit(text, "`n")
-    
     depth := []
-    in_array := false
-    result := "[" . p_section_name . "]`n"
+    inside_array := false
+    arr := []
 
-    for i, i_line in arr_txt
+    for i, i_line in text
     {
-        if in_array
+        if(inside_array)
         {
-            i_line := StrReplace(i_line, ":=", ":")
-            result .= i_line
-            
-            if i_line == "]"
+            if(InStr(i_line, "]"))
             {
-                in_array := false
-                result .= "`n"
+                i_line_arr := StrSplit(i_line, "]")
+                if(i_line_arr.Has(1))
+                {
+                    arr.Push(i_line_arr[1])
+                    inside_array := false
+                    k := StrArrayToString(depth, " ")
+                    json_map[depth] := arr
+                    depth.Pop()
+                    arr := []
+                    continue
+                }
+                inside_array := false
+                depth.Pop()
+                arr := []
+                continue
             }
+            arr.Push(i_line)
             continue
-            
         }
         
-        if i_line == ""
-            continue
-        if i_line == "{"
+        if(InStr(i_line, "}"))
         {
-            depth.push("")
-            continue
-        }
-        if i_line == "}"
-        {
-            if depth.Length < 1
+            depth.Pop()
+            i_line := StrReplace(i_line, "}", "")
+            if(i_line == "")
             {
-                throw Error("Error while parsing.", "JsonToIni")
+                continue
             }
-            depth.pop()
-            continue
         }
         
-        
-        
-        if InStr(i_line, ":{")
+        if(InStr(i_line, ":"))
         {
-            i_line := StrReplace(i_line, "`"", "")
-            depth.push(StrSplit(i_line, ":{")[1])
+            i_linekv := StrSplit(i_line, ":")
+            if(!i_linekv.Has(2))
+            {
+                depth.Push(i_linekv[1])
+                continue
+            }
+            if(InStr(i_linekv[2], "["))
+            {
+                inside_array := true
+                depth.Push(i_linekv[1])
+                continue
+            }
+            k := StrArrayToString(depth, " ")
+            json_map[k . " " . i_linekv[1]] := i_linekv[2]
             continue
         }
-        
-        if InStr(i_line, ":=")
+        if(InStr(i_line, "["))
         {
-            i_line := StrReplace(i_line, ":=", "=")
-            i_line := StrReplace(i_line, "`"", "")
-            i_line .= "temprandom"
-            if InStr(i_line, ",temprandom")
-                i_line := StrReplace(i_line, ",temprandom", "")
-            else
-                i_line := StrReplace(i_line, "temprandom", "")
-            result .= StrArrayToString(depth, ".") . i_line . "`n"
-            continue
-        }
-        
-        if InStr(i_line, ":[")
-        {
-            i_line := StrReplace(i_line, "`"", "")
-            i_line := StrReplace(i_line, ":[", "=[")
-            result .= StrArrayToString(depth, ".") . i_line
-            in_array := true
+            inside_array := true
+            i_line_arr := StrSplit(i_line, "[")
+            if(i_line_arr.Has(1))
+            {
+                arr.Push(i_line_arr[1])
+                continue
+            }
             continue
         }
     }
-    
-    if(FileExist(p_path_to_save) != "" && p_append == false)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    /*
+    for i, line in text
     {
-        FileDelete(p_path_to_save)
+
+        if(InStr(text[i], ":{"))
+        {
+            text[i] := StrReplace(text[i], ":{", "")
+            text[i] := StrReplace(text[i], "`"", "")
+
+            if(InStr(text[i+1], ":{"))
+            {
+                text[i+1] := StrReplace(text[i+1], ":{", "")
+                text[i+1] := StrReplace(text[i+1], "`"", "")
+
+                if(InStr(text[i+2], ":{"))
+                {
+                    text[i+2] := StrReplace(text[i+2], ":{", "")
+                    text[i+2] := StrReplace(text[i+2], "`"", "")
+
+                    if(InStr(text[i+3], ":{"))
+                    {
+                        text[i+3] := StrReplace(text[i+3], ":{", "")
+                        text[i+3] := StrReplace(text[i+3], "`"", "")
+
+                        throw Error("Too in-depth, not yet implemented.")
+                    }
+
+                    if(InStr(text[i+3], "`":`""))
+                    {
+                        text[i+3] := StrReplace(text[i+3], ",", "")
+                        text[i+3] := StrReplace(text[i+3], "`"", "")
+
+                        key_val := StrSplit(text[i+3], ":", "`"")
+                        json_map[
+                            text[i] . " " . 
+                            text[i+1] . " " . 
+                            text[i+2] . " " . 
+                            key_val[1]] := key_val[2]
+                        
+                        A_Index := i+3
+                        continue
+                    }
+                }
+            }
+        }
     }
-    dir := StrSplit(p_path_to_save, "\")
-    dir.Pop()
-    dir := StrArrayToString(dir, "\")
-    if DirExist(dir) == ""
-        DirCreate(dir)
-    
-    FileAppend(result, p_path_to_save)
-    
-    return result
-    
+
+
+    return json_map
+    */
+   return text
 }
+
+json := A_Desktop . "\example_2.json"
+
+json := JsonToMap(json, true)
+
+#Include StrArrayToString.ahk
+
+MsgBox(StrArrayToString(json))
+;MsgBox(json)
+
+;MsgBox(json["quiz sport q1 question"])
