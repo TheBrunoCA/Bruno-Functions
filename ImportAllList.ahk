@@ -1,0 +1,10 @@
+#Include BatWrite.ahk
+#Include bruno-functions.ahk
+#Include DynamicClass.ahk
+#Include GetFromSimpleArray.ahk
+#Include GetPageContent.ahk
+#Include Ini.ahk
+#Include IsOnline.ahk
+#Include JsonToIni.ahk
+#Include JsonToSimpleArray.ahk
+#Include StrArrayToString.ahk
