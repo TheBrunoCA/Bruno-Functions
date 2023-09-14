@@ -5,11 +5,11 @@ Class Ini{
     }
 
     __Item[section := "", key := "", default := ""] {
-        get => this.ReadItem(section, key, default)
-        set => this.WriteItem(section, key, value)
+        get => this.readItem(section, key, default)
+        set => this.writeItem(section, key, value)
     }
 
-    ReadItem(section, key, defaut){
+    readItem(section, key, defaut){
         try {
             if section != "" and key != ""
                 return IniRead(this.path, section, key)
@@ -24,7 +24,7 @@ Class Ini{
         }
     }
 
-    WriteItem(section, key, value){
+    writeItem(section, key, value){
         if value == ""
             throw Error("Value must not be empty.", "WriteItem", "WriteItem")
         if section == ""
@@ -40,5 +40,26 @@ Class Ini{
             }
             return false
         }
+    }
+
+    hasValue(section, key){
+        if this.readItem(section, key, "") == ""{
+            return false
+        }
+        return true
+    }
+
+    hasKey(section, key){
+        if !InStr(this.readItem(section, "", ""), key){
+            return false
+        }
+        return true
+    }
+
+    hasSection(section){
+        if !InStr(this.readItem("", "", ""), section){
+            return false
+        }
+        return true
     }
 }
