@@ -8,3 +8,4 @@
 #Include JsonToIni.ahk
 #Include JsonToSimpleArray.ahk
 #Include StrArrayToString.ahk
+#Include DownloadFile.ahk
