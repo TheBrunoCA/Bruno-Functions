@@ -52,7 +52,14 @@ class ExcelClass{
     }
 
     getValueRow(value, range := this.defaultRange){
-        return this.sheet.Range(range).Find(value).Row
+        try{
+            return this.sheet.Range(range).Find(value).Row
+        } catch Error as e{
+            if InStr(e.Message, 'This value of type "String" has no property named "Row".'){
+                return false
+            }
+        }
+        
     }
 
     getValuePosition(value, range := this.defaultRange){
