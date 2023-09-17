@@ -62,4 +62,12 @@ Class Ini{
         }
         return true
     }
+
+    delete(section, key := ""){
+        if key == ""{
+            IniDelete(this.path, section)
+            return
+        }
+        IniDelete(this.path, section, key)
+    }
 }

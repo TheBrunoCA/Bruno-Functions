@@ -9,3 +9,5 @@
 #Include JsonToSimpleArray.ahk
 #Include StrArrayToString.ahk
 #Include DownloadFile.ahk
+#Include ExcelClass.ahk
+#Include LoadingScreen.ahk
