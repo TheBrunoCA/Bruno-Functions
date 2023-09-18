@@ -4,7 +4,15 @@ class ExcelClass{
     __New(pWorkSheet := "") {
         if pWorkSheet != ""{
             this.path := pWorkSheet
-            this.COM := ComObjGet(pWorkSheet)
+            try{
+                this.COM := ComObjGet(pWorkSheet)
+            }catch Error as e{
+                if InStr(e.Message, "(0x80004005)"){
+                    throw Error("Could not open the worksheet", "ExcelClass", "Possibly corrupt")
+                    return
+                }
+            }
+            
             this.sheet := this.COM.ActiveSheet
             this.rowCount := this.sheet.Rows.Count
         }
