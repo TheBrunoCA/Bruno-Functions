@@ -9,7 +9,6 @@ class ExcelClass{
             }catch Error as e{
                 if InStr(e.Message, "(0x80004005)"){
                     throw Error("Could not open the worksheet", "ExcelClass", "Possibly corrupt")
-                    return
                 }
             }
             
