@@ -3,7 +3,7 @@ class LoadingScreen{
     __New(text, title, &progressVar, maxProgress, color := "cGreen", onCloseCallback := this._exitAappCallback) {
         this.progressVar    := &progressVar
         this.maxProgress    := maxProgress
-        this.gLoading       := Gui("+AlwaysOnTop -MaximizeBox -MinimizeBox")
+        this.gLoading       := Gui("-MaximizeBox -MinimizeBox")
         this.gLoading.Title := title
         this.gLoading.OnEvent("Close", onCloseCallback)
         this.gTxt           := this.gLoading.AddText(, text)
