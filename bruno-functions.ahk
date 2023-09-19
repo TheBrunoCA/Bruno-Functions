@@ -45,3 +45,9 @@ NewIni(p_ini_path){
     }
     return p_ini_path
 }
+
+IsStrEmpty(str){
+    return str == ""
+}
+
+emptyStr := ""
