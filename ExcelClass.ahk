@@ -50,7 +50,6 @@ class ExcelClass{
     }
 
     getValue(cell){
-        test := this.sheet.Range(StrUpper(cell)).Value
         return this.sheet.Range(StrUpper(cell)).Value
     }
 
