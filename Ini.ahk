@@ -26,7 +26,7 @@ Class Ini{
 
     writeItem(section, key, value){
         if value == ""
-            throw Error("Value must not be empty.", "WriteItem", "WriteItem")
+            IniDelete(this.path, section, key)
         if section == ""
             throw Error("Section must not be empty.", "WriteItem", "WriteItem")
         try{
