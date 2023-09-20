@@ -11,3 +11,5 @@
 #Include DownloadFile.ahk
 #Include ExcelClass.ahk
 #Include LoadingScreen.ahk
+#Include ExcelToCsv.ahk
+#Include CsvHelper.ahk
