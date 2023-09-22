@@ -70,8 +70,6 @@ FileOverwrite(text, file_pattern){
     }
 }
 
-FileOverwrite("", "c:\Users\bruno\OneDrive\Documentos\Repos\SIM-Extra\consequentemente falhou em ler o ini.txt")
-
 IsStrEmpty(str){
     return str == ""
 }
