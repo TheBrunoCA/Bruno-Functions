@@ -46,6 +46,32 @@ NewIni(p_ini_path){
     return p_ini_path
 }
 
+IsExcelInstalled(){
+    isit := false
+    try{
+        ComObject("Excel.Application")
+        ProcessClose("excel.exe")
+        isit := true
+    } catch{
+        isit := false
+    }
+    return isit
+}
+
+FileOverwrite(text, file_pattern){
+    try{
+        FileDelete(file_pattern)
+    } catch Error as e{
+        if e.Message == "Parameter #1 of FileDelete is invalid."
+            throw Error("Parameter #1 of FileOverwrite is invalid.")
+    }
+    try{
+        FileAppend(text, file_pattern, "UTF-8")
+    }
+}
+
+FileOverwrite("", "c:\Users\bruno\OneDrive\Documentos\Repos\SIM-Extra\consequentemente falhou em ler o ini.txt")
+
 IsStrEmpty(str){
     return str == ""
 }

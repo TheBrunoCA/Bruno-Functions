@@ -13,7 +13,8 @@ Class CsvHelper{
 
     _getHeaders(){
         h := StrSplit(this.file, "`n")
-        return StrSplit(h[1], this.separator)
+        h := StrReplace(h[1], '"', "")
+        return StrSplit(h, this.separator)
     }
 
     _noHeaders(){
@@ -35,25 +36,28 @@ Class CsvHelper{
                 throw Error("Header does not exist.", "CsvHelper.findItem()")
         }
 
-        loop parse this.file, "`n"{
-            line := StrSplit(A_LoopField, this.separator)
+        lines := StrSplit(this.file, "`n")
+        for line in lines{
+
+            ;line := StrSplit(A_LoopField, this.separator)
             if header == ""{
-                for i, entry in line{
-                    if entry == ""
+                loop parse line, "CSV"{
+                    if A_LoopField == ""
                         continue
-                    if (exactMatch and entry != whatToSearch) or ( not exactMatch and not InStr(entry, whatToSearch))
+                    if (exactMatch and A_LoopField != whatToSearch) or ( not exactMatch and not InStr(A_LoopField, whatToSearch))
                         continue
-                    return this._getItemMap(A_LoopField)
+                    return this._getItemMap(line)
                 }
             } else{
-                for i, entry in line{
-                    if entry == ""
+                loop parse line, "CSV"{
+                ;for i, entry in line{
+                    if A_LoopField == ""
                         continue
-                    if this.headers[i] != header
+                    if this.headers[A_Index] != header
                         continue
-                    if (exactMatch and entry != whatToSearch) or ( not exactMatch and not InStr(entry, whatToSearch))
+                    if (exactMatch and A_LoopField != whatToSearch) or ( not exactMatch and not InStr(A_LoopField, whatToSearch))
                         break
-                    return this._getItemMap(A_LoopField)
+                    return this._getItemMap(line)
                 }
             }
         }
@@ -75,26 +79,26 @@ Class CsvHelper{
                 throw Error("Header does not exist.", "CsvHelper.getAllItems()")
         }
         items := Array()
-        loop parse this.file, "`n"{
-            line := StrSplit(A_LoopField, this.separator)
+        lines := StrSplit(this.file, "`n")
+        for line in lines{
             if header == ""{
-                for i, entry in line{
-                    if entry == ""
+                loop parse line, "CSV"{
+                    if A_LoopField == ""
                         continue
-                    if (exactMatch and entry != whatToSearch) or ( not exactMatch and not InStr(entry, whatToSearch))
+                    if (exactMatch and A_LoopField != whatToSearch) or ( not exactMatch and not InStr(A_LoopField, whatToSearch))
                         continue
-                    items.Push(this._getItemMap(A_LoopField))
+                    items.Push(this._getItemMap(line))
                     break
                 }
             } else{
-                for i, entry in line{
-                    if entry == ""
+                loop parse line, "CSV"{
+                    if A_LoopField == ""
                         continue
-                    if this.headers[i] != header
+                    if this.headers[A_Index] != header
                         continue
-                    if (exactMatch and entry != whatToSearch) or ( not exactMatch and not InStr(entry, whatToSearch))
+                    if (exactMatch and A_LoopField != whatToSearch) or ( not exactMatch and not InStr(A_LoopField, whatToSearch))
                         break
-                    items.Push(this._getItemMap(A_LoopField))
+                    items.Push(this._getItemMap(line))
                     break
                 }
             }
@@ -129,27 +133,27 @@ Class CsvHelper{
                 throw Error("Key must be a Header.", "CsvHelper.getMapOfItems()")
 
         items := Map()
-        loop parse this.file, "`n"{
-            line := StrSplit(A_LoopField, this.separator)
+        lines := StrSplit(this.file, "`n")
+        for line in lines{
             if header == ""{
-                for i, entry in line{
-                    if entry == ""
+                loop parse line, "CSV"{
+                    if A_LoopField == ""
                         continue
-                    if (exactMatch and entry != whatToSearch) or ( not exactMatch and not InStr(entry, whatToSearch))
+                    if (exactMatch and A_LoopField != whatToSearch) or ( not exactMatch and not InStr(A_LoopField, whatToSearch))
                         continue
-                    item := this._getItemMap(A_LoopField)
+                    item := this._getItemMap(line)
                     items[item[key]] := item
                     break
                 }
             } else{
-                for i, entry in line{
-                    if entry == ""
+                loop parse line, "CSV"{
+                    if A_LoopField == ""
                         continue
-                    if this.headers[i] != header
+                    if this.headers[A_Index] != header
                         continue
-                    if (exactMatch and entry != whatToSearch) or ( not exactMatch and not InStr(entry, whatToSearch))
+                    if (exactMatch and A_LoopField != whatToSearch) or ( not exactMatch and not InStr(A_LoopField, whatToSearch))
                         break
-                    item := this._getItemMap(A_LoopField)
+                    item := this._getItemMap(line)
                     items[item[key]] := item
                     break
                 }
@@ -162,7 +166,7 @@ Class CsvHelper{
 
     _getItemMap(item){
         nMap := Map()
-        loop parse item, this.separator{
+        loop parse item, "CSV"{
             header := this.headers[A_Index]
             field := A_LoopField
             nMap[header] := field
