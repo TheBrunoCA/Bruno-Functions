@@ -38,8 +38,3 @@ class LoadingScreen{
         ExitApp()
     }
 }
-
-var := 0
-load := LoadingScreen("", "", &var, 10)
-load.start()
-load.stop()
