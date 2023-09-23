@@ -31,6 +31,7 @@ downloadFile(url, filename, progress := true, overwrite := true, onCloseCallback
     progressDelta := progressGui.AddText("w300", "")
     progressGui.Show()
     SetTimer(__updateProgress, 100)
+    currentSize := 0
     Download(url, filename)
     SetTimer(__updateProgress, 0)
     progressValue.Value := "Finalizado"
@@ -38,8 +39,9 @@ downloadFile(url, filename, progress := true, overwrite := true, onCloseCallback
     progressGui.Destroy()
 
         __updateProgress(){
-            currentSize := FileGetSize(filename)
-
+            try{
+                currentSize := FileGetSize(filename)
+            }
             if addProgressBar
                 progressBar.Value := Round(currentSize / conLength * 100)
 
