@@ -46,11 +46,13 @@ NewIni(p_ini_path){
     return p_ini_path
 }
 
-IsExcelInstalled(){
+IsExcelInstalled(force_close := false){
     isit := false
     try{
         ComObject("Excel.Application")
-        ProcessClose("excel.exe")
+        if force_close
+            ProcessClose("excel.exe")
+        
         isit := true
     } catch{
         isit := false
