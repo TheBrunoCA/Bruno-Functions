@@ -13,8 +13,11 @@ Class CsvHelper{
 
     _getHeaders(){
         h := StrSplit(this.file, "`n")
-        h := StrReplace(h[1], '"', "")
-        return StrSplit(h, this.separator)
+        headers := []
+        loop parse h[1], "CSV"{
+            headers.Push(A_LoopField)
+        }
+        return headers
     }
 
     _noHeaders(){
