@@ -73,6 +73,7 @@ ExcelToCsv(originalFilePath, csvFilePath, separator := ",", normalized := false,
     txtFile := StrReplace(txtFile, '`n', '"`n"')
     txtFile := SubStr(txtFile, 1, -2)
     txtFile := StrReplace(txtFile, '""', "")
+    txtFile := StrReplace(txtFile, '�', "")
 
     try{
         FileDelete(csvFilePath)
