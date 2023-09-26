@@ -70,6 +70,8 @@ FileOverwrite(text, file_pattern){
     try{
         FileAppend(text, file_pattern, "UTF-8")
     }
+
+    return file_pattern
 }
 
 IsStrEmpty(str){
