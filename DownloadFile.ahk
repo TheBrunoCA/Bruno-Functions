@@ -5,6 +5,9 @@ downloadFile(url, filename, progress := true, overwrite := true, onCloseCallback
         return
 
 
+    file := StrSplit(filename, "\")
+    file := file[file.Length]
+
     last_size := 0
     progressGui := Gui("AlwaysOnTop", "Download em andamento")
 
@@ -22,7 +25,7 @@ downloadFile(url, filename, progress := true, overwrite := true, onCloseCallback
 
     addProgressBar := conLength != "" and progress
 
-    progressName := progressGui.AddText(, "Baixando " filename)
+    progressName := progressGui.AddText(, "Baixando " file " de " url)
 
     if addProgressBar
         progressBar := progressGui.AddProgress("w500 cGreen", 0)
