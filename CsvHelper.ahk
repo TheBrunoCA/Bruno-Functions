@@ -7,6 +7,15 @@ Class CsvHelper {
         this.file := this.Sanify(this.file)
         this.headers := this._GetHeaders()
         this.file := this._NoHeaders()
+        this.length := this._getLength()
+    }
+
+    _getLength(){
+        lines := 0
+        loop parse this.file, "`n"{
+            lines += 1
+        }
+        return lines
     }
 
     Sanify(what_to){
