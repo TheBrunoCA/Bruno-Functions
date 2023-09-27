@@ -37,6 +37,7 @@ downloadFile(url, filename, progress := true, overwrite := true, onCloseCallback
     progressValue.Value := "Finalizado"
     Sleep 1000
     progressGui.Destroy()
+    return filename
 
         __updateProgress(){
             try{
