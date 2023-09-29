@@ -41,7 +41,7 @@ class ExcelClass{
     }
 
     openWorkbook(pPath){
-        this.COM.Workbooks.Open(pPath)
+        this.COM.Workbooks.Open(pPath, , false, , , , , , , , false)
         this.sheet := this.COM.ActiveSheet
     }
 
@@ -98,6 +98,7 @@ class ExcelClass{
     }
 
     close(){
+        this.COM.Saved := true
         this.COM.Close()
     }
 }
