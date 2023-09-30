@@ -18,7 +18,7 @@ Class CsvHelper {
         return lines
     }
 
-    Sanify(what_to){
+    Sanify(what_to, show_progress := false){
         csv := what_to
         c := 0
         csv := StrReplace(csv, ' "', '"', , &c)
@@ -110,7 +110,7 @@ Class CsvHelper {
         return false
     }
 
-    FindItem(whatToSearch, header := "", exactMatch := false) {
+    FindItem(whatToSearch, header := "", exactMatch := false, show_progess := false) {
         if whatToSearch == ""
             throw Error("whatToSearch must no be empty.", "CsvHelper.findItem()")
 
@@ -118,14 +118,27 @@ Class CsvHelper {
             throw Error("Header does not exist.")
 
         lines := StrSplit(this.file, "`n")
-        for line in lines {
+        if show_progess{
+            p := 0
+            l := __LoadingScreen("Searching", "Searching...", &p, lines.Length)
+            l.start()
+        }
+        for i, line in lines {
+            if show_progess
+                p := i
             if header == "" {
                 loop parse line, "CSV" {
                     if A_LoopField == ""
                         continue
                     if (exactMatch and A_LoopField != whatToSearch) or ( not exactMatch and not InStr(A_LoopField, whatToSearch))
                         continue
-                    return this._GetItemMap(line)
+                    item := this._GetItemMap(line)
+                    if show_progess{
+                        l.stop()
+                    }
+                    if item == false
+                        break
+                    return item
                 }
             } else {
                 loop parse line, "CSV" {
@@ -135,14 +148,23 @@ Class CsvHelper {
                         continue
                     if (exactMatch and A_LoopField != whatToSearch) or ( not exactMatch and not InStr(A_LoopField, whatToSearch))
                         break
-                    return this._GetItemMap(line)
+                    item := this._GetItemMap(line)
+                    if show_progess{
+                        l.stop()
+                    }
+                    if item == false
+                        break
+                    return item
                 }
             }
+        }
+        if show_progess{
+            l.stop()
         }
         throw Error("No item found with such attributes.", "CsvHelper/findItem()")
     }
 
-    GetArrayOfItems(whatToSearch, header := "", exactMatch := false) {
+    GetArrayOfItems(whatToSearch, header := "", exactMatch := false, show_progess := false) {
         if whatToSearch == ""
             throw Error("whatToSearch must no be empty.", "CsvHelper.getAllItems()")
 
@@ -151,14 +173,24 @@ Class CsvHelper {
 
         items := Array()
         lines := StrSplit(this.file, "`n")
-        for line in lines {
+        if show_progess{
+            p := 0
+            l := __LoadingScreen("Searching", "Searching...", &p, lines.Length)
+            l.start(50)
+        }
+        for i, line in lines {
+            if show_progess
+                p := i
             if header == "" {
                 loop parse line, "CSV" {
                     if A_LoopField == ""
                         continue
                     if (exactMatch and A_LoopField != whatToSearch) or ( not exactMatch and not InStr(A_LoopField, whatToSearch))
                         continue
-                    items.Push(this._GetItemMap(line))
+                    item := this._GetItemMap(line)
+                    if item == false
+                        break
+                    items.Push(item)
                     break
                 }
             } else {
@@ -169,17 +201,23 @@ Class CsvHelper {
                         continue
                     if (exactMatch and A_LoopField != whatToSearch) or ( not exactMatch and not InStr(A_LoopField, whatToSearch))
                         break
-                    items.Push(this._GetItemMap(line))
+                    item := this._GetItemMap(line)
+                    if item == false
+                        break
+                    items.Push(item)
                     break
                 }
             }
+        }
+        if show_progess{
+            l.stop()
         }
         if items.Has(1)
             return items
         throw Error("No item found with such attributes.", "CsvHelper/getAllItems()")
     }
 
-    GetMapOfItems(whatToSearch, key := this.headers[1], header := "", exactmatch := false) {
+    GetMapOfItems(whatToSearch, key := this.headers[1], header := "", exactmatch := false, show_progess := false) {
         if whatToSearch == ""
             throw Error("whatToSearch must no be empty.", "CsvHelper.getMapOfItems()")
 
@@ -193,7 +231,14 @@ Class CsvHelper {
 
         items := Map()
         lines := StrSplit(this.file, "`n")
-        for line in lines {
+        if show_progess{
+            p := 0
+            l := __LoadingScreen("Searching", "Searching...", &p, lines.Length)
+            l.start()
+        }
+        for i, line in lines {
+            if show_progess
+                p := i
             if header == "" {
                 loop parse line, "CSV" {
                     if A_LoopField == ""
@@ -201,6 +246,8 @@ Class CsvHelper {
                     if (exactMatch and A_LoopField != whatToSearch) or ( not exactMatch and not InStr(A_LoopField, whatToSearch))
                         continue
                     item := this._GetItemMap(line)
+                    if item == false
+                        break
                     items[item[key]] := item
                     break
                 }
@@ -213,10 +260,15 @@ Class CsvHelper {
                     if (exactMatch and A_LoopField != whatToSearch) or ( not exactMatch and not InStr(A_LoopField, whatToSearch))
                         break
                     item := this._GetItemMap(line)
+                    if item == false
+                        break
                     items[item[key]] := item
                     break
                 }
             }
+        }
+        if show_progess{
+            l.stop()
         }
         if items.Count
             return items
@@ -226,6 +278,8 @@ Class CsvHelper {
     _GetItemMap(item) {
         nMap := Map()
         loop parse item, "CSV" {
+            if A_Index > this.headers.length
+                return false
             header := this.headers[A_Index]
             field := A_LoopField
             nMap[header] := field
@@ -293,5 +347,45 @@ Class CsvHelper {
                 }
             }
         }
+    }
+}
+
+class __LoadingScreen{
+    __New(text, title, &progressVar, maxProgress, color := "BackgroundGray cGreen", onCloseCallback := this._exitAappCallback) {
+        this.progressVar    := &progressVar
+        this.maxProgress    := maxProgress
+        this.gLoading       := Gui("-MaximizeBox -MinimizeBox -Caption -Border")
+        this.gLoading.Title := title
+        this.gLoading.OnEvent("Close", onCloseCallback)
+        this.gTxt           := this.gLoading.AddText(, text)
+        this.gBar           := this.gLoading.AddProgress(color " w150", 0)
+        this.gPercent       := this.gLoading.AddText("w50", "0%")
+        this.fUpdateProgress:= ObjBindMethod(this, "_progressUpdate")
+    }
+
+    start(updateInterval := 100){
+        SetTimer(this.fUpdateProgress, updateInterval)
+        this.gLoading.Show()
+    }
+
+    stop(){
+        SetTimer(this.fUpdateProgress, 0)
+        this.gLoading.Destroy()
+        
+    }
+
+    _progressUpdate(args*){
+        progress            := %this.progressVar%
+        maxProgress         := this.maxProgress
+        if progress >= maxProgress{
+            return
+        }
+        percent             := Round(progress/maxProgress*100)
+        this.gBar.Value     := percent
+        this.gPercent.Value := percent "%"
+    }
+
+    _exitAappCallback(){
+        ExitApp()
     }
 }
