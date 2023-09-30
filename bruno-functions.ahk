@@ -74,6 +74,10 @@ FileOverwrite(text, file_pattern){
     return file_pattern
 }
 
+GetCurrentUnixTime(){
+    return DateDiff(A_NowUTC, "19700101000000", "seconds")
+}
+
 IsStrEmpty(str){
     return str == ""
 }

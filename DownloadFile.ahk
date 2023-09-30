@@ -9,7 +9,7 @@ downloadFile(url, filename, progress := true, overwrite := true, onCloseCallback
     file := file[file.Length]
 
     last_size := 0
-    progressGui := Gui("AlwaysOnTop", "Download em andamento")
+    progressGui := Gui("AlwaysOnTop -Caption -Border", "Download em andamento")
 
     if onCloseCallback
         progressGui.OnEvent("Close", onCloseCallback)
@@ -28,7 +28,7 @@ downloadFile(url, filename, progress := true, overwrite := true, onCloseCallback
     progressName := progressGui.AddText(, "Baixando " file " de " url)
 
     if addProgressBar
-        progressBar := progressGui.AddProgress("w500 cGreen", 0)
+        progressBar := progressGui.AddProgress("w500 BackgroundGray cGreen", 0)
 
     progressValue := progressGui.AddText("w300", "")
     progressDelta := progressGui.AddText("w300", "")
@@ -54,8 +54,8 @@ downloadFile(url, filename, progress := true, overwrite := true, onCloseCallback
             progressValue.Value := "Baixados: " Round(currentSize/1000) " KB"
             
             if addProgressBar
-                progressValue.Value .= " / " conLength / 1000 " KB"
+                progressValue.Value .= " / " round(conLength / 1000) " KB"
 
-            progressDelta.Value := "Velocidade: " delta_size " KB/s"
+            progressDelta.Value := "Velocidade: " delta_size / 1000 " MB/s"
         }
 }
