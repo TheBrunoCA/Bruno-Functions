@@ -13,7 +13,8 @@ Converts a array of strings into a single string.
 */
 StrArrayToString(p_str_array, p_delimiter := "`n")
 {
-    ret_string := ""
+    local string
+    local ret_string := ""
 
     for i, string in p_str_array
     {

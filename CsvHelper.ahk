@@ -288,7 +288,7 @@ Class CsvHelper {
     }
 
     Save(path := this.path, overwrite := true){
-        file := ""
+        local file := ""
         for head in this.headers
             file .= '"' head '",'
         file .= "`n"

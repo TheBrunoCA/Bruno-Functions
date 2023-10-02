@@ -1,5 +1,5 @@
 ; A little class to help access the printers without having to use the registry
-Class Printers{
+Class PrinterHelper{
     __New() {
         this._Load()
     }

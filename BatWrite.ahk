@@ -99,7 +99,7 @@ class BatWrite {
     Deletes the last line of command.
     */
     DeleteLastLine(){
-        file := FileRead(this.path)
+        local file := FileRead(this.path)
         if file == ""
             return
         file := StrSplit(file, "`n")
@@ -109,7 +109,7 @@ class BatWrite {
             if last != ""
                 break
         }
-        ret := ""
+        local ret := ""
         for i, w in file{
             ret .= w . "`n"
         }

@@ -5,7 +5,7 @@ downloadFile(url, filename, progress := true, overwrite := true, onCloseCallback
         return
 
 
-    file := StrSplit(filename, "\")
+    local file := StrSplit(filename, "\")
     file := file[file.Length]
 
     last_size := 0

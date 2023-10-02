@@ -18,17 +18,18 @@ JsonToIni(p_json, p_path_to_save, p_section_name := "DEFAULT", p_is_path := fals
 
     StrArrayToString(p_str_array, p_delimiter := "`n")
     {
+        local string
         if !p_str_array.HasMethod("Pop")
             throw Error("p_str_array must be a Array", "StrArrayToString")
 
-        ret_string := ""
+        local ret_string := ""
 
         for i, string in p_str_array
         {
             if string == ""
                 continue
             
-            ret_string .= string . p_delimiter
+            local ret_string .= string . p_delimiter
         }
     
         return ret_string
