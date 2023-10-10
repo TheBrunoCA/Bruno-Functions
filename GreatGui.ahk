@@ -61,17 +61,18 @@ UpdateScrollBars(GuiObj) {
     NumPut("Int", ScrH, "UInt", GuiH, SI, 12) ; nMax , nPage
     DllCall("SetScrollInfo", "Ptr", GuiObj.Hwnd, "Int", 1, "Ptr", SI, "Int", 1) ; SB_VERT
     ; Scroll if necessary
-    X := (L < 0) && (R < GuiW) ? Min(Abs(L), GuiW - R) : 0
-    Y := (T < 0) && (B < GuiH) ? Min(Abs(T), GuiH - B) : 0
-    If (X || Y)
+    X := (L < 0) and (R < GuiW) ? Min(Abs(L), GuiW - R) : 0
+    Y := (T < 0) and (B < GuiH) ? Min(Abs(T), GuiH - B) : 0
+    If (X or Y)
         DllCall("ScrollWindow", "Ptr", GuiObj.Hwnd, "Int", X, "Int", Y, "Ptr", 0, "Ptr", 0)
 }
 ; ======================================================================================================================
 OnWheel(W, L, M, H) {
-    If !(HWND := WinExist()) ;|| GuiCtrlFromHwnd(H)
+    If !(HWND := WinExist()) or (GuiCtrlFromHwnd(H) and (InStr(ControlGetClassNN(GuiCtrlFromHwnd(h)), "Edit")
+        or InStr(ControlGetClassNN(GuiCtrlFromHwnd(h)), "List")))
         Return
     HT := DllCall("SendMessage", "Ptr", HWND, "UInt", 0x0084, "Ptr", 0, "Ptr", l) ; WM_NCHITTEST = 0x0084
-    If (HT = 6) || (HT = 1) { ; HTHSCROLL = 6, HTVSCROLL = 7
+    If (HT = 6) or (HT = 7) or (HT = 1) { ; HTHSCROLL = 6, HTVSCROLL = 7
         SB := (W & 0x80000000) ? 1 : 0 ; SB_LINEDOWN = 1, SB_LINEUP = 0
         SM := (HT = 6) ? 0x0114 : 0x0115 ;  WM_HSCROLL = 0x0114, WM_VSCROLL = 0x0115
         OnScroll(SB, 0, SM, HWND)
@@ -107,7 +108,7 @@ OnScroll(WP, LP, M, H) {
     OldPos := NumGet(SI, 20, "Int") ; nPos
     X := (Bar = 0) ? OldPos - NewPos : 0
     Y := (Bar = 1) ? OldPos - NewPos : 0
-    If (X || Y) {
+    If (X or Y) {
         ; Scroll contents of window and invalidate uncovered area.
         DllCall("ScrollWindow", "Ptr", H, "Int", X, "Int", Y, "Ptr", 0, "Ptr", 0)
         ; Update scroll bar.
