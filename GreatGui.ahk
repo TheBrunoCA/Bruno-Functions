@@ -10,7 +10,6 @@
 GreatGui(options := "", title := A_ScriptName){
     g := Gui(options " +0x300000", title)
     g.OnEvent("Size", ScrollGui_Size)
-    g.OnEvent("Close", ScrollGui_Close)
     OnMessage(0x0115, OnScroll) ; WM_VSCROLL
     OnMessage(0x0114, OnScroll) ; WM_HSCROLL
     OnMessage(0x020A, OnWheel)  ; WM_MOUSEWHEEL
@@ -27,10 +26,6 @@ GreatGui(options := "", title := A_ScriptName){
 ScrollGui_Size(GuiObj, MinMax, Width, Height) {
     If (MinMax != 1)
         UpdateScrollBars(GuiObj)
-}
-; ======================================================================================================================
-ScrollGui_Close(*) {
-    ExitApp
 }
 ; ======================================================================================================================
 UpdateScrollBars(GuiObj) {
