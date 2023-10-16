@@ -1,5 +1,3 @@
-
-
 downloadFile(url, filename, progress := true, overwrite := true, onCloseCallback := false){
     if not overwrite and FileExist(filename)
         return
@@ -33,9 +31,11 @@ downloadFile(url, filename, progress := true, overwrite := true, onCloseCallback
     progressValue := progressGui.AddText("w300", "")
     progressDelta := progressGui.AddText("w300", "")
     progressGui.Show()
-    SetTimer(__updateProgress, 100)
+    SetTimer(__updateProgress, 20)
     currentSize := 0
     Download(url, filename)
+    if IsSet(progressBar)
+        progressBar.Value := 100
     SetTimer(__updateProgress, 0)
     progressValue.Value := "Finalizado"
     Sleep 1000
@@ -47,14 +47,14 @@ downloadFile(url, filename, progress := true, overwrite := true, onCloseCallback
                 currentSize := FileGetSize(filename)
             }
             if addProgressBar
-                progressBar.Value := Round(currentSize / conLength * 100)
+                progressBar.Value := Floor(currentSize / conLength * 100)
 
-            delta_size := Round((currentSize - last_size) / 1000 * 10)
+            delta_size := Floor((currentSize - last_size) / 1000 * 10)
             last_size := currentSize
-            progressValue.Value := "Baixados: " Round(currentSize/1000) " KB"
+            progressValue.Value := "Baixados: " Floor(currentSize/1000) " KB"
             
             if addProgressBar
-                progressValue.Value .= " / " round(conLength / 1000) " KB"
+                progressValue.Value .= " / " Floor(conLength / 1000) " KB"
 
             progressDelta.Value := "Velocidade: " delta_size / 1000 " MB/s"
         }
